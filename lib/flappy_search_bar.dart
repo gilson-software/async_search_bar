@@ -15,7 +15,10 @@ mixin ControllerListener<T> on State<SearchBar<T>> {
 
   void onError(Error error) {}
 
-  void onSummit() {}
+  void onEditingComplete() {}
+  
+  void onSubmitted(String text) {}
+
 
   void onTap() {}
 
@@ -131,7 +134,9 @@ class SearchBarController<T> {
 class SearchBar<T> extends StatefulWidget {
   /// Future returning searched items
   final Future<List<T>> Function(String text) onSearch;
-  final void Function()? onSummit;
+  final void Function()? onEditingComplete;
+  final void Function(String)? onSubmitted;
+
   final void Function()? onTap;
   final FocusNode? focusNode;
 
@@ -240,7 +245,8 @@ class SearchBar<T> extends StatefulWidget {
     this.textStyle = const TextStyle(color: Colors.black),
     this.cancellationWidget = const Text("Cancel"),
     this.onCancelled,
-    this.onSummit,
+    this.onEditingComplete,
+    this.onSubmitted,
     this.onTap,
     this.textEditingController,
     this.focusNode,
@@ -304,9 +310,15 @@ class SearchBarState<T> extends State<SearchBar<T>>
   }
 
   @override
-  void onSummit() {
-    print("on summit");
-    widget.onSummit!();
+  void onEditingComplete() {
+    print("on onEditingComplete");
+    widget.onEditingComplete!();
+  }
+
+    @override
+  void onSubmitted(String text) {
+    print("on onSubmitted");
+    widget.onSubmitted!(text);
   }
   
   @override
@@ -425,7 +437,8 @@ class SearchBarState<T> extends State<SearchBar<T>>
                         child: TextField(
                           onTap: onTap,
                           textInputAction: TextInputAction.search,
-                          onEditingComplete: onSummit,
+                          onEditingComplete: onEditingComplete,
+                          onSubmitted: onSubmitted,
                           autofocus: widget.autoFocus,
                           focusNode: widget.focusNode,
                           controller: _searchQueryController,
